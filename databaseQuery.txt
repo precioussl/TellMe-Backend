@@ -1,0 +1,79 @@
+-- Database: tellme
+
+-- DROP DATABASE IF EXISTS tellme;
+
+CREATE DATABASE tellme
+    WITH
+    OWNER = postgres
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'English_Nigeria.1252'
+    LC_CTYPE = 'English_Nigeria.1252'
+    LOCALE_PROVIDER = 'libc'
+    TABLESPACE = pg_default
+    CONNECTION LIMIT = -1
+    IS_TEMPLATE = False;
+
+
+############# CREATE PUBLIC SCHEMA #############
+
+-- SCHEMA: public
+
+-- DROP SCHEMA IF EXISTS public ;
+
+CREATE SCHEMA IF NOT EXISTS public
+    AUTHORIZATION pg_database_owner;
+
+COMMENT ON SCHEMA public
+    IS 'standard public schema';
+
+GRANT USAGE ON SCHEMA public TO PUBLIC;
+
+GRANT ALL ON SCHEMA public TO pg_database_owner;
+
+
+
+############# CREATE USER TABLE #############
+-- Table: public.users
+
+-- DROP TABLE IF EXISTS public.users;
+
+CREATE TABLE IF NOT EXISTS public.users
+(
+    firstname text COLLATE pg_catalog."default" NOT NULL,
+    lastname text COLLATE pg_catalog."default" NOT NULL,
+    email text COLLATE pg_catalog."default" NOT NULL,
+    password text COLLATE pg_catalog."default" NOT NULL,
+    isadmin boolean DEFAULT false,
+    id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    CONSTRAINT users_pkey PRIMARY KEY (id)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.users
+    OWNER to postgres;
+
+
+
+############# CREATE FEED TABLE #############
+-- Table: public.feeds
+
+-- DROP TABLE IF EXISTS public.feeds;
+
+CREATE TABLE IF NOT EXISTS public.feeds
+(
+    id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    title text COLLATE pg_catalog."default" NOT NULL,
+    textarea text COLLATE pg_catalog."default" NOT NULL,
+    userid integer NOT NULL,
+    CONSTRAINT feeds_pkey PRIMARY KEY (id),
+    CONSTRAINT feeds_userid_fkey FOREIGN KEY (userid)
+        REFERENCES public.users (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.feeds
+    OWNER to postgres;
